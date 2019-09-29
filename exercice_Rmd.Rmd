@@ -1,0 +1,74 @@
+---
+title: "Exercice RMD"
+author: "Marylene Henry"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Chargement libraries
+library(ggplot2)
+library(gapminder)
+library(tidyverse)
+library(lattice)
+library(emojifont)
+library(flextable)
+
+# chargement de la table pour analyse
+data(gapminder)
+```
+
+## &Eacute;nonc&eacute;
+
+* *&Eacute;nonc&eacute; donn&eacute; par Vincent* - Un Rmd qui contient la prise en charge et l'analyse d'un jeu de donn&eacute;es (au choix), avec un graphique, et un tableau ( &agrave; minima).
+
+* *Choix de Maryl&egrave;ne* - J'ai choisi la table `gapminder` du package `gapminder`. *(un peu simple... désolée)* `r emoji("smile")` 
+
+## La table : `gapminder`
+Description de la structure de la table + quelques stats de r&eacute;sum&eacute; basique :
+
+```{r gapminder}
+glimpse(gapminder)
+
+summary(gapminder)
+```
+  
+
+## Diagrammes paire &agrave; paire : version simple
+
+Nous gardons 4 variables `(year, lifeExp, pop, gdpPercap)`   
+
+```{r, echo=FALSE}
+gapmind2 <- gapminder[,c("year","lifeExp","pop","gdpPercap")]
+plot(gapmind2)
+```
+
+### Focus sur un graphique particulier : lien entre esp&eacute;rance de vie, PIB, continent
+
+Focus sur l'analyse crois&eacute;e `lifeExp` et `gdpPercap` (3eme dimension d'analyse : `continent`).  
+*NB : &eacute;chelle logarithmique sur l'axe des abscisses*.
+
+```{r, echo=FALSE}
+ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp, color = continent))+
+    geom_point()+
+    scale_x_log10()+
+    theme_minimal()
+```
+
+## Quelques statistiques simples agr&eacute;g&eacute;es
+
+Pour l'ann&eacute;e 1997   
+
+```{r, echo=FALSE, error=FALSE}
+stat_simpl <- gapminder %>% 
+  filter(year == 1997) %>% 
+  group_by(continent) %>% 
+  summarise(moyenne_esp = mean(lifeExp),
+            moyenne_gdp = mean(gdpPercap))
+
+ft <- flextable(head(stat_simpl))
+    ft <- flextable::autofit(ft)
+    ft
+
+```
